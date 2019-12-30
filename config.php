@@ -13,4 +13,4 @@ $apiContext = new \PayPal\Rest\ApiContext(
     )
 );
 
-var_dump($apiContext);
+// var_dump($apiContext);
