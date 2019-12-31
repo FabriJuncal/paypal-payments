@@ -6,6 +6,8 @@ require  __DIR__  .'/vendor/autoload.php';
 //En el caso que la instalación sea con la descarga directa:
 // requiera __DIR__. '/PayPal-PHP-SDK/autoload.php';
 
+define('URL_SITIO', 'http://localhost/paypal-payments/');
+
 $apiContext = new \PayPal\Rest\ApiContext(
     new \PayPal\Auth\OAuthTokenCredential(       
         'AVMEhAAgxM_zT645alvu-MCWZrS0zd6pcA63vG0vb95l656tU_sLPRBgWUYwhs4zc7DZ71sUk1Kpu5qH', // ClientID
