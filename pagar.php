@@ -12,6 +12,7 @@ use PayPal\Api\Details;
 use PayPal\Api\Amount;
 use PayPal\Api\Transaction;
 use PayPal\Api\RedirectUrls;
+use PayPal\Api\Payment;
 
 require_once 'config.php';
 
@@ -19,8 +20,9 @@ require_once 'config.php';
 $producto = htmlspecialchars($_POST['producto']);
 $precio = htmlspecialchars($_POST['precio']);
 $precio = (int) $precio;
-$envio = 0;
+$envio = 1;
 $total = $precio + $envio;
+
 // FORMA DE PAGO
 $compra = new Payer();
 $compra->setPaymentMethod('paypal');  // setPaymentMethod(): Insertar el metodo de pago
@@ -45,7 +47,7 @@ $detalle->setShipping($envio)  //setShipping():Insertar Monto del Envio
 // DATOS TRANSACCION
 $cantidad = new Amount();
 $cantidad->setCurrency('USD')   //setCurrency():Insertar Tipo de Moneda
-         ->setTotal($precio)    //setTotal():Insertar Total de la transaccion
+         ->setTotal($total)    //setTotal():Insertar Total de la transaccion
          ->setDetails($detalle);//setDetails():Insertar Detalle de la Operacion
 
 // DEFINICION DEL CONTRATO - PARA QUE ES EL PAGO Y QUIEN LO ESTA REALIZANDO
@@ -61,5 +63,27 @@ $redireccionar = new RedirectUrls();
 $redireccionar->setReturnUrl(URL_SITIO."pago_finalizado.php?exito=true")//setReturnUrl(): URL a la que se redirigiría al pagador después de aprobar el pago.
               ->setCancelUrl(URL_SITIO."pago_finalizado.php?exito=false");//setCancelUrl(): URL a la que se redirigiría al pagador después de cancelar el pago
 
-echo $redireccionar->getReturnUrl();
+$pago = new Payment();
+$pago->setIntent("sale")//setIntent(): Intento de pago ->  Valores válidos: ["sale", "authorize", "order"]
+     ->setPayer($compra)//setPayer(): Origen de los fondos para el pago representado por una cuenta PayPal o una tarjeta de crédito directa
+     ->setRedirectUrls($redireccionar)//setRedirectUrls(): Conjunto de URL de redireccionamiento que proporciona solo para pagos basados en PayPal
+     ->setTransactions(array($transaccion));//setTransactions(): Detalles de la transacción, incluidos el monto y los detalles del artículo
+
+try{
+    $pago->create($apiContext);
+}catch (PayPal\Exception\PayPalConnectionException $pce){
+    echo "<pre>";
+    die(print_r(json_decode($pce->getData())));
+}
+
+$aprobado = $pago->getApprovalLink();
+
+header("Location: {$aprobado}");
+
+
+
+
+
+
+
 
