@@ -70,15 +70,15 @@ $pago->setIntent("sale")//setIntent(): Intento de pago ->  Valores válidos: ["s
      ->setTransactions(array($transaccion));//setTransactions(): Detalles de la transacción, incluidos el monto y los detalles del artículo
 
 try{
-    $pago->create($apiContext);
+    $pago->create($apiContext); // Se concreta el pago
 }catch (PayPal\Exception\PayPalConnectionException $pce){
     echo "<pre>";
-    die(print_r(json_decode($pce->getData())));
+    die(print_r(json_decode($pce->getData()))); // En el caso que ocurra un error, se lo imprime por pantalla
 }
 
-$aprobado = $pago->getApprovalLink();
+$aprobado = $pago->getApprovalLink(); // Cargamos el link del sitio de Paypal en una variable
 
-header("Location: {$aprobado}");
+header("Location: {$aprobado}"); // Redirecciona al sitio de Paypal
 
 
 
